@@ -1,0 +1,3 @@
+[submodule "deps/OpenUtau"]
+	path = deps/OpenUtau
+	url = git@github.com:stakira/OpenUtau
