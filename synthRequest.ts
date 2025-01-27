@@ -11,7 +11,7 @@ export interface SynthRequest {
   // i32, double*
   samples: number[];
   // i32, char*
-  frq: string | null;
+  frq: Uint8Array | null;
   // i32
   tone: number;
   // double
@@ -64,9 +64,9 @@ export const synthRequestToPointer = (
   let frqSize = 0;
   let frqPointer = 0;
   if (request.frq != null) {
-    frqSize = core.worldline.lengthBytesUTF8(request.frq) + 1;
-    frqPointer = core.malloc<"char">(frqSize);
-    core.worldline.stringToUTF8(request.frq, frqPointer, frqSize);
+    frqSize = request.frq.length;
+    frqPointer = core.malloc<"char">(request.frq.length);
+    core.worldline.HEAPU8.set(request.frq, frqPointer);
   }
 
   const pitchBendPointer = core.malloc<"number">(

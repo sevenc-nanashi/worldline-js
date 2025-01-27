@@ -9,10 +9,10 @@ Deno.test("Hello World", async () => {
   const testAudio = `${cvcRoot}/_ああR.wav`;
   const content = await Deno.readFile(testAudio);
   const data = Array.from(new Int16Array(content.slice(44).buffer)).map(
-    (x) => x / 32768,
+    (x) => x / 32768.0,
   );
 
-  const frq = await Deno.readTextFile(`${cvcRoot}/_ああR_wav.frq`);
+  const frq = await Deno.readFile(`${cvcRoot}/_ああR_wav.frq`);
 
   const otoIniRaw = await Deno.readFile(`${cvcRoot}/oto.ini`);
   const otoIni = new TextDecoder("shift-jis").decode(otoIniRaw);

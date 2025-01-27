@@ -80,8 +80,6 @@ type Worldline = EmscriptenModule & {
   stackSave: typeof stackSave;
   stackRestore: typeof stackRestore;
   stackAlloc: typeof stackAlloc;
-  stringToUTF8: typeof stringToUTF8;
-  lengthBytesUTF8: typeof lengthBytesUTF8;
   UTF8ToString: typeof UTF8ToString;
   // deno-lint-ignore no-explicit-any
   addFunction: <T extends (...args: any[]) => any>(
