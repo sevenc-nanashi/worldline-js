@@ -1,0 +1,15 @@
+diff -bur ../deps/OpenUtau/cpp/worldline/worldline.h ./worldline/worldline.h
+--- ../deps/OpenUtau/cpp/worldline/worldline.h	2025-01-26 21:46:22.075275544 +0900
++++ ./worldline/worldline.h	2025-01-27 08:42:46.855276273 +0900
+@@ -7,7 +7,10 @@
+ #include "worldline/phrase_synth.h"
+ #include "worldline/synth_request.h"
+ 
+-#if defined(_MSC_VER)
++#if defined(__EMSCRIPTEN__)
++#include <emscripten.h>
++#define DLL_API EMSCRIPTEN_KEEPALIVE
++#elif defined(_MSC_VER)
+ #define DLL_API __declspec(dllexport)
+ #elif defined(__GNUC__)
+ #define DLL_API __attribute__((visibility("default")))
