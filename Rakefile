@@ -11,10 +11,7 @@ task "build:copy" do
   puts "Copying files"
 
   FileUtils.mkdir_p "worldline", verbose: true
-  FileUtils.cp_r Dir.glob(
-                   "./deps/OpenUtau/cpp/*",
-                   flags: File::FNM_DOTMATCH,
-                 ),
+  FileUtils.cp_r Dir.glob("./deps/OpenUtau/cpp/*", flags: File::FNM_DOTMATCH),
                  "./worldline",
                  verbose: true
 end
@@ -32,4 +29,20 @@ task "clean" do
   require "fileutils"
   FileUtils.rm_rf "worldline", verbose: true
   FileUtils.rm_rf "build", verbose: true
+end
+
+task "test:download" do
+  # https://tyc.rei-yumesaki.net/files/voice/tyc-utau.zip
+  require "open-uri"
+  require "fileutils"
+
+  FileUtils.mkdir_p "deps/tyc-utau", verbose: true
+  unless File.exist?("deps/tyc-utau/tyc-utau.zip")
+    puts "Downloading tyc-utau.zip"
+    URI.open("https://tyc.rei-yumesaki.net/files/voice/tyc-utau.zip") do |f|
+      File.binwrite "deps/tyc-utau/tyc-utau.zip", f.read
+    end
+  end
+
+  sh "unzip -O sjis deps/tyc-utau/tyc-utau.zip -d deps/tyc-utau"
 end

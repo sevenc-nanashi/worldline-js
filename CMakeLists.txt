@@ -82,15 +82,35 @@ add_library(pyin STATIC ${pyin_source})
 target_link_libraries(pyin gvps)
 
 include_directories(${spline_SOURCE_DIR}/src)
+
+set(exported_runtime_methods
+    ccall
+    cwrap
+    stackSave
+    stackRestore
+    stackAlloc
+    stringToUTF8
+    lengthBytesUTF8
+    UTF8ToString
+    addFunction)
+set(exported_functions ${exported_runtime_methods} _malloc _free)
+
+list(JOIN exported_runtime_methods "','" exported_runtime_methods)
+list(JOIN exported_functions "','" exported_functions)
+
 target_link_options(
   worldline
   PRIVATE
   -sMODULARIZE=1
   -sEXPORT_ES6=1
   -sEXPORT_NAME=worldline
-  -sEXPORTED_RUNTIME_METHODS=['cwrap']
+  "-sEXPORTED_RUNTIME_METHODS=['${exported_runtime_methods}']"
+  "-sEXPORTED_FUNCTIONS=['${exported_functions}']"
   -sWASM=1
-  -sUSE_OFFSET_CONVERTER=1)
+  -sUSE_OFFSET_CONVERTER=1
+  -sASSERTIONS=2
+  -sINVOKE_RUN=0
+  -sALLOW_TABLE_GROWTH=1)
 
 target_link_libraries(
   worldline

@@ -1,0 +1,33 @@
+{
+  "version": "4",
+  "specifiers": {
+    "jsr:@sevenc-nanashi/binaryseeker@^1.2.1": "1.2.1",
+    "npm:@types/emscripten@^1.40.0": "1.40.0",
+    "npm:@types/node@*": "22.5.4"
+  },
+  "jsr": {
+    "@sevenc-nanashi/binaryseeker@1.2.1": {
+      "integrity": "9e69a120a12a4fd8fba5a1ac236c2d306275ad11c064431e770c092b682f33c3"
+    }
+  },
+  "npm": {
+    "@types/emscripten@1.40.0": {
+      "integrity": "sha512-MD2JJ25S4tnjnhjWyalMS6K6p0h+zQV6+Ylm+aGbiS8tSn/aHLSGNzBgduj6FB4zH0ax2GRMGYi/8G1uOxhXWA=="
+    },
+    "@types/node@22.5.4": {
+      "integrity": "sha512-FDuKUJQm/ju9fT/SeX/6+gBzoPzlVCzfzmGkwKvRHQVxi4BntVbyIwf6a4Xn62mrvndLiml6z/UBXIdEVjQLXg==",
+      "dependencies": [
+        "undici-types"
+      ]
+    },
+    "undici-types@6.19.8": {
+      "integrity": "sha512-ve2KP6f/JnbPBFyobGHuerC9g1FYGn/F8n1LWTwNxCEzd6IfqTwUQcNXgEtmmQ6DlRrC1hrSrBnCZPokRrDHjw=="
+    }
+  },
+  "workspace": {
+    "dependencies": [
+      "jsr:@sevenc-nanashi/binaryseeker@^1.2.1",
+      "npm:@types/emscripten@^1.40.0"
+    ]
+  }
+}
