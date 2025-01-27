@@ -2,3 +2,5 @@ build
 
 worldline
 deps/tyc-utau
+
+*.wav

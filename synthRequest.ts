@@ -31,7 +31,7 @@ export interface SynthRequest {
   // double
   tempo: number;
   // i32, i32*
-  pitchBend: number[];
+  pitchBend: number[] | null;
 
   // i32
   flagG: number;
@@ -69,12 +69,17 @@ export const synthRequestToPointer = (
     core.worldline.HEAPU8.set(request.frq, frqPointer);
   }
 
-  const pitchBendPointer = core.malloc<"number">(
-    core.i32Size * request.pitchBend.length,
-  );
-  for (let i = 0; i < request.pitchBend.length; i++) {
-    core.worldline.HEAP32[pitchBendPointer / core.i32Size + i] =
-      request.pitchBend[i];
+  let pitchBendSize = 0;
+  let pitchBendPointer = 0;
+  if (request.pitchBend) {
+    pitchBendSize = request.pitchBend.length;
+    pitchBendPointer = core.malloc<"number">(
+      core.i32Size * request.pitchBend.length,
+    );
+    for (let i = 0; i < request.pitchBend.length; i++) {
+      core.worldline.HEAP32[pitchBendPointer / core.i32Size + i] =
+        request.pitchBend[i];
+    }
   }
 
   let currentPointer = pointer;
@@ -93,7 +98,7 @@ export const synthRequestToPointer = (
     [core.doubleSize, request.volume],
     [core.doubleSize, request.modulation],
     [core.doubleSize, request.tempo],
-    [core.i32Size, request.pitchBend.length],
+    [core.i32Size, pitchBendSize],
     [core.pointerSize, pitchBendPointer],
     [core.i32Size, request.flagG],
     [core.i32Size, request.flagO],

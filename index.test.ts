@@ -38,7 +38,7 @@ Deno.test("Hello World", async () => {
     volume: 100.0,
     modulation: 0.0,
     tempo: 0.0,
-    pitchBend: [0.0],
+    pitchBend: null,
     flagG: 0,
     flagO: 0,
     flagP: 86,
@@ -67,9 +67,9 @@ Deno.test("Hello World", async () => {
   buffer.writeUInt16LE(1);
   buffer.writeUInt16LE(1);
   buffer.writeUInt32LE(44100);
-  buffer.writeUInt32LE(44100 * 2);
-  buffer.writeUInt16LE(2);
-  buffer.writeUInt16LE(16);
+  buffer.writeUInt32LE(44100 * 4);
+  buffer.writeUInt16LE(4);
+  buffer.writeUInt16LE(32);
   buffer.writeChars("data");
   buffer.writeUInt32LE(y.length * 4);
   for (const sample of y) {
@@ -78,5 +78,5 @@ Deno.test("Hello World", async () => {
   const wav = buffer.toUint8Array();
   console.log(y.length);
 
-  await Deno.writeFile("test.wav", wav);
+  await Deno.writeFile("js.wav", wav);
 });

@@ -18,10 +18,10 @@ end
 task "build:patch" do
   sh "#{patch_bin} -p1 < #{__dir__}/patches/worldline.patch", chdir: "worldline"
 end
-task "build:cmake" do
+task "build:cmake", [:debug] do |_t, args|
   puts "Building with CMake"
 
-  sh "#{emcmake_bin} #{emcmake_cmake_bin} -S . -B build"
+  sh "#{emcmake_bin} #{emcmake_cmake_bin} -S . -B build -DCMAKE_BUILD_TYPE=#{args[:debug] ? "Debug" : "Release"}"
   sh "#{cmake_bin} --build build"
 end
 

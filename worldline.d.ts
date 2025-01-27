@@ -43,6 +43,8 @@ type Functions = {
     y: Pointer<Pointer<"number">>,
     logCallback: Callback<(msg: Pointer<"char">) => void>,
   ) => number;
+
+  main: (argc: number, argv: Pointer<Pointer<"char">>) => number;
 };
 
 type ToWasmType<T> = T extends number

@@ -45,7 +45,10 @@ export const i32Size = 4;
 export const doubleSize = 8;
 export const pointerSize = 4;
 
-export const malloc = <T extends string>(size: number): Pointer<T> => {
+// deno-lint-ignore no-explicit-any
+export const malloc = <T extends Pointer<any> | string>(
+  size: number,
+): Pointer<T> => {
   return worldline._malloc(size) as Pointer<T>;
 };
 

@@ -5,6 +5,7 @@ cmake_policy(SET CMP0077 NEW)
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 
 include(FetchContent)
+add_compile_options($<$<CONFIG:Debug>:-g>)
 
 set(ABSL_PROPAGATE_CXX_STD ON)
 set(WORLD_BUILD_EXAMPLES OFF)
@@ -110,7 +111,8 @@ target_link_options(
   -sUSE_OFFSET_CONVERTER=1
   -sASSERTIONS=2
   -sINVOKE_RUN=0
-  -sALLOW_TABLE_GROWTH=1)
+  -sALLOW_TABLE_GROWTH=1
+  $<$<CONFIG:Debug>:-g3>)
 
 target_link_libraries(
   worldline
