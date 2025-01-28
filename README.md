@@ -65,6 +65,19 @@ const y = phraseSynth.synth();
 
 ## Building
 
+You need [Rake](https://ruby.github.io/rake/) and [Emscripten](https://emscripten.org/) to build this project.
+
+```bash
+rake build                  # Build the project
+rake build:cmake[debug]     # Build with CMake
+rake build:copy             # Copy files
+rake build:patch_artifact   # Patch artifact
+rake build:patch_worldline  # Patch Worldline
+rake clean                  # Clean the project
+rake notice                 # Generate NOTICE.md
+rake test:download          # Download Lunamira's UTAU voicebank
+```
+
 ## License
 
 This library is licensed under the MIT license. This also includes the worldline
