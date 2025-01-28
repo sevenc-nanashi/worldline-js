@@ -1,4 +1,8 @@
 {
+  "name": "@sevenc-nanashi/worldline-js",
+  "exports": {
+    ".": "./index.ts"
+  },
   "imports": {
     "@cross/fs": "jsr:@cross/fs@^0.1.11",
     "@cross/runtime": "jsr:@cross/runtime@^1.1.0",
@@ -7,9 +11,23 @@
     "@types/emscripten": "npm:@types/emscripten@^1.40.0"
   },
   "lint": {
-    "ignore": [
-      "deps",
-      "./worldline.js"
+    "exclude": ["deps", "./worldline.js", "worldline"],
+    "rules": {
+      "include": ["no-slow-types"]
+    }
+  },
+  "fmt": {
+    "exclude": ["deps", "./worldline.js", "worldline"]
+  },
+  "publish": {
+    "include": [
+      "NOTICE.md",
+      "README.md",
+      "./index.ts",
+      "./core.ts",
+      "./synthRequest.ts",
+      "./worldline.js",
+      "./worldline.d.ts"
     ]
   }
 }

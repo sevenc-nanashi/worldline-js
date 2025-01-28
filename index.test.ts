@@ -2,7 +2,7 @@ import * as fs from "@cross/fs";
 import { CurrentRuntime } from "@cross/runtime";
 import { BinaryWriter } from "@sevenc-nanashi/binaryseeker";
 import { createCrossTest } from "@sevenc-nanashi/cross-test";
-import { PhraseSynth, SynthRequest } from "./index.ts";
+import { PhraseSynth, type SynthRequest } from "./index.ts";
 
 const crossTest = await createCrossTest(import.meta.url, {
   runtimes: ["node", "deno", "bun"],

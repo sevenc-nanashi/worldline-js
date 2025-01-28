@@ -46,30 +46,23 @@ type Functions = {
   main: (argc: number, argv: Pointer<Pointer<"char">>) => number;
 };
 
-type ToWasmType<T> = T extends number
-  ? "number"
-  : T extends string
-    ? "string"
-    : T extends boolean
-      ? "boolean"
-      : // deno-lint-ignore no-explicit-any
-        T extends Pointer<any>
-        ? "number"
-        : T extends void
-          ? "void"
-          : never;
+type ToWasmType<T> = T extends number ? "number"
+  : T extends string ? "string"
+  : T extends boolean ? "boolean"
+  // deno-lint-ignore no-explicit-any
+  : T extends Pointer<any> ? "number"
+  : T extends void ? "void"
+  : never;
 type Ccall = <T extends keyof Functions>(
   name: T,
-  returnType: ReturnType<Functions[T]> extends Promise<infer U>
-    ? ToWasmType<U>
+  returnType: ReturnType<Functions[T]> extends Promise<infer U> ? ToWasmType<U>
     : ToWasmType<ReturnType<Functions[T]>>,
   argTypes: ("number" | "string" | "boolean" | "void")[],
   args: Parameters<Functions[T]>,
 ) => ReturnType<Functions[T]>;
 type Cwrap = <T extends keyof Functions>(
   name: T,
-  returnType: ReturnType<Functions[T]> extends Promise<infer U>
-    ? ToWasmType<U>
+  returnType: ReturnType<Functions[T]> extends Promise<infer U> ? ToWasmType<U>
     : ToWasmType<ReturnType<Functions[T]>>,
   argTypes: ("number" | "string" | "boolean" | "void")[],
 ) => Functions[T];

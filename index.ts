@@ -1,7 +1,11 @@
 import * as core from "./core.ts";
-import { SynthRequest, synthRequestToPointer } from "./synthRequest.ts";
+import {
+  deleteSynthRequest,
+  type SynthRequest,
+  synthRequestToPointer,
+} from "./synthRequest.ts";
 // @ts-types="./worldline.d.ts"
-import { Pointer } from "./build/worldline.js";
+import type { Pointer } from "./build/worldline.js";
 
 let logCallback: (msg: string) => void = console.log;
 const logCallbackPointer = core.worldline.addFunction(
@@ -10,6 +14,8 @@ const logCallbackPointer = core.worldline.addFunction(
   },
   "vi",
 );
+
+/** Sets the callback function for log messages. The default is `console.log`. */
 export function setLogCallback(callback: (msg: string) => void) {
   logCallback = callback;
 }
@@ -17,14 +23,18 @@ export function setLogCallback(callback: (msg: string) => void) {
 const registry = new FinalizationRegistry((synth: Pointer<"PhraseSynth">) => {
   core.phraseSynthDelete(synth);
 });
+
+/** PhraseSynth of Worldline. */
 export class PhraseSynth {
   #pointer: Pointer<"PhraseSynth">;
 
+  /** Creates a new PhraseSynth. */
   constructor() {
     this.#pointer = core.phraseSynthNew();
     registry.register(this, this.#pointer, this);
   }
 
+  /** Adds a request to the PhraseSynth. */
   public addRequest(
     request: SynthRequest,
     posMs: number,
@@ -44,8 +54,11 @@ export class PhraseSynth {
       fadeOutMs,
       logCallbackPointer,
     );
+
+    deleteSynthRequest(synthRequestPointer);
   }
 
+  /** Sets the curves for the PhraseSynth. */
   public setCurves(
     f0: number[],
     gender: number[],
@@ -110,7 +123,8 @@ export class PhraseSynth {
     core.free(voicingPointer);
   }
 
-  public synth() {
+  /** Synthesizes the PhraseSynth and returns the result. */
+  public synth(): Float32Array {
     const yPointer = core.worldline._malloc(core.pointerSize) as Pointer<
       Pointer<"number">
     >;
@@ -132,9 +146,19 @@ export class PhraseSynth {
     return y;
   }
 
+  /** Deletes the PhraseSynth. */
   delete() {
     core.phraseSynthDelete(this.#pointer);
     registry.unregister(this);
+  }
+
+  /**
+   * Deletes the PhraseSynth (alias of `delete`).
+   *
+   * This method is useful when you are using the [`using` statement](https://github.com/tc39/proposal-explicit-resource-management).
+   */
+  [Symbol.dispose]() {
+    this.delete();
   }
 }
 

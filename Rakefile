@@ -4,13 +4,18 @@ patch_bin = ENV.fetch("PATCH", "patch")
 emcmake_bin = ENV.fetch("EMCMAKE", "emcmake")
 emcmake_cmake_bin = ENV.fetch("EMCMAKE_CMAKE", "cmake")
 cmake_bin = ENV.fetch("CMAKE", "cmake")
+
 task default: %w[build]
+
+desc "Build the project"
 task build: %w[
        build:copy
        build:patch_worldline
        build:cmake
        build:patch_artifact
      ]
+
+desc "Copy files"
 task "build:copy" do
   require "fileutils"
   puts "Copying files"
@@ -21,15 +26,21 @@ task "build:copy" do
                  preserve: true,
                  verbose: true
 end
+
+desc "Patch Worldline"
 task "build:patch_worldline" do
   sh "#{patch_bin} -p1 < #{__dir__}/patches/worldline.patch", chdir: "worldline"
 end
+
+desc "Build with CMake"
 task "build:cmake", [:debug] do |_t, args|
   puts "Building with CMake"
 
   sh "#{emcmake_bin} #{emcmake_cmake_bin} -S . -B build -DCMAKE_BUILD_TYPE=#{args[:debug] ? "Debug" : "Release"}"
   sh "#{cmake_bin} --build build"
 end
+
+desc "Patch artifact"
 task "build:patch_artifact" do
   worldline_base = File.read("build/worldline.js")
   worldline_base.gsub!('import("module")', 'import("node:module")')
@@ -42,12 +53,14 @@ task "build:patch_artifact" do
   File.write("worldline.js", worldline_base)
 end
 
+desc "Clean the project"
 task "clean" do
   require "fileutils"
   FileUtils.rm_rf "worldline", verbose: true
   FileUtils.rm_rf "build", verbose: true
 end
 
+desc "Download Lunamira's UTAU voicebank"
 task "test:download" do
   # https://tyc.rei-yumesaki.net/files/voice/tyc-utau.zip
   require "open-uri"
@@ -62,4 +75,20 @@ task "test:download" do
   end
 
   sh "unzip -O sjis deps/tyc-utau/tyc-utau.zip -d deps/tyc-utau"
+end
+
+desc "Generate NOTICE.md"
+task "notice" do
+  File.write("NOTICE.md", <<~MARKDOWN)
+  # Notice
+
+  ## Worldline
+
+  Worldline is a resampler included in OpenUtau. It is licensed under the MIT license.
+
+  ```txt
+  #{File.read("deps/OpenUtau/LICENSE.txt")}
+  ```
+
+  MARKDOWN
 end

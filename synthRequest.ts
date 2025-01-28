@@ -1,49 +1,50 @@
-import { Pointer } from "./worldline.d.ts";
+import type { Pointer } from "./worldline.d.ts";
 import * as core from "./core.ts";
 
 const ceil = <T extends number>(a: T, b: number): T => {
   return (Math.ceil(a / b) * b) as T;
 };
 
+/** Represents a request to synthesize a phrase. */
 export interface SynthRequest {
-  // i32
+  /** The sample rate of the audio. */
   sampleFs: number;
-  // i32, double*
+  /** The audio samples. Will be converted to f64[] in the WASM. */
   samples: number[];
-  // i32, char*
+  /** The frq file. */
   frq: Uint8Array | null;
-  // i32
+  /** The MIDI tone. */
   tone: number;
-  // double
+  /** The consonant velocity. 100 is normal. */
   conVel: number;
-  // double
+  /** The offset. 1st element of the frq file. */
   offset: number;
-  // double
+  /** The required length. */
   requiredLength: number;
-  // double
+  /** The consonant length. 2nd element of the frq file. */
   consonant: number;
-  // double
+  /** The cutoff. 3rd element of the frq file. */
   cutOff: number;
-  // double
+  /** The volume. 100 is normal. */
   volume: number;
-  // double
+  /** The modulation. */
   modulation: number;
-  // double
+  /** The tempo. */
   tempo: number;
-  // i32, i32*
+  /** Pitch bend. */
   pitchBend: number[] | null;
 
-  // i32
+  /** The G flag. 0 is normal. */
   flagG: number;
-  // i32
+  /** The O flag. 0 is normal. */
   flagO: number;
-  // i32
+  /** The P flag. 86 is normal. */
   flagP: number;
-  // i32
+  /** The Mt flag. 0 is normal. */
   flagMt: number;
-  // i32
+  /** The Mb flag. 0 is normal. */
   flagMb: number;
-  // i32
+  /** The Mv flag. 100 is normal. */
   flagMv: number;
 }
 export const synthRequestToPointer = (
@@ -83,30 +84,32 @@ export const synthRequestToPointer = (
   }
 
   let currentPointer = pointer;
-  for (const [size, value] of [
-    [core.i32Size, request.sampleFs],
-    [core.i32Size, request.samples.length],
-    [core.pointerSize, samplesPointer],
-    [core.i32Size, frqSize],
-    [core.pointerSize, frqPointer],
-    [core.i32Size, request.tone],
-    [core.doubleSize, request.conVel],
-    [core.doubleSize, request.offset],
-    [core.doubleSize, request.requiredLength],
-    [core.doubleSize, request.consonant],
-    [core.doubleSize, request.cutOff],
-    [core.doubleSize, request.volume],
-    [core.doubleSize, request.modulation],
-    [core.doubleSize, request.tempo],
-    [core.i32Size, pitchBendSize],
-    [core.pointerSize, pitchBendPointer],
-    [core.i32Size, request.flagG],
-    [core.i32Size, request.flagO],
-    [core.i32Size, request.flagP],
-    [core.i32Size, request.flagMt],
-    [core.i32Size, request.flagMb],
-    [core.i32Size, request.flagMv],
-  ]) {
+  for (
+    const [size, value] of [
+      [core.i32Size, request.sampleFs],
+      [core.i32Size, request.samples.length],
+      [core.pointerSize, samplesPointer],
+      [core.i32Size, frqSize],
+      [core.pointerSize, frqPointer],
+      [core.i32Size, request.tone],
+      [core.doubleSize, request.conVel],
+      [core.doubleSize, request.offset],
+      [core.doubleSize, request.requiredLength],
+      [core.doubleSize, request.consonant],
+      [core.doubleSize, request.cutOff],
+      [core.doubleSize, request.volume],
+      [core.doubleSize, request.modulation],
+      [core.doubleSize, request.tempo],
+      [core.i32Size, pitchBendSize],
+      [core.pointerSize, pitchBendPointer],
+      [core.i32Size, request.flagG],
+      [core.i32Size, request.flagO],
+      [core.i32Size, request.flagP],
+      [core.i32Size, request.flagMt],
+      [core.i32Size, request.flagMb],
+      [core.i32Size, request.flagMv],
+    ]
+  ) {
     if (size === core.i32Size) {
       core.worldline.HEAP32[currentPointer / core.i32Size] = value;
     } else {
@@ -119,4 +122,28 @@ export const synthRequestToPointer = (
   }
 
   return pointer as Pointer<"SynthRequest">;
+};
+
+export const deleteSynthRequest = (pointer: Pointer<"SynthRequest">) => {
+  const samplesPointer = core.worldline.HEAP32[
+    pointer / core.pointerSize + 2
+  ] as Pointer<"number">;
+  core.free(samplesPointer);
+
+  const frqPointer = core.worldline.HEAP32[
+    pointer / core.pointerSize + 4
+  ] as Pointer<"char">;
+  if (frqPointer) {
+    core.free(frqPointer);
+  }
+
+  const pitchBendPointer = core.worldline.HEAP32[
+    pointer / core.pointerSize + 16
+  ] as Pointer<"number">;
+  if (pitchBendPointer) {
+    core.free(pitchBendPointer);
+  }
+
+  // TODO: it SRGVs
+  // core.free(pointer);
 };
