@@ -41,6 +41,7 @@ jobs:
           deno fmt --check
       - name: Run test
         run: |
+          rake test:download
           deno test -A
       - name: Publish
         if: github.ref == 'refs/heads/main'
