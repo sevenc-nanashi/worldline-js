@@ -112,6 +112,7 @@ target_link_options(
   -sASSERTIONS=2
   -sINVOKE_RUN=0
   -sALLOW_TABLE_GROWTH=1
+  -sSINGLE_FILE=1
   $<$<CONFIG:Debug>:-g3>)
 
 target_link_libraries(

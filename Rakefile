@@ -11,8 +11,9 @@ task "build:copy" do
   puts "Copying files"
 
   FileUtils.mkdir_p "worldline", verbose: true
-  FileUtils.cp_r Dir.glob("./deps/OpenUtau/cpp/*", flags: File::FNM_DOTMATCH),
-                 "./worldline",
+  FileUtils.cp_r Dir.glob("./deps/OpenUtau/cpp/.", flags: File::FNM_DOTMATCH),
+                 "./worldline/.",
+                 preserve: true,
                  verbose: true
 end
 task "build:patch" do

@@ -60,23 +60,22 @@ Deno.test("Hello World", async () => {
 
   const buffer = new BinaryWriter();
   buffer.writeChars("RIFF");
-  buffer.writeUInt32LE(36 + y.length * 4);
+  buffer.writeUInt32LE(y.length * 4 + 36);
   buffer.writeChars("WAVE");
   buffer.writeChars("fmt ");
   buffer.writeUInt32LE(16);
-  buffer.writeUInt16LE(1);
-  buffer.writeUInt16LE(1);
-  buffer.writeUInt32LE(44100);
-  buffer.writeUInt32LE(44100 * 4);
-  buffer.writeUInt16LE(4);
-  buffer.writeUInt16LE(32);
+  buffer.writeUInt16LE(3); // IEEE Float
+  buffer.writeUInt16LE(1); // Mono
+  buffer.writeUInt32LE(44100); // Sample Rate
+  buffer.writeUInt32LE(44100 * 4); // Byte Rate
+  buffer.writeUInt16LE(4); // Block Align
+  buffer.writeUInt16LE(32); // Bits Per Sample
   buffer.writeChars("data");
   buffer.writeUInt32LE(y.length * 4);
   for (const sample of y) {
     buffer.writeFloat32LE(sample);
   }
   const wav = buffer.toUint8Array();
-  console.log(y.length);
 
   await Deno.writeFile("js.wav", wav);
 });

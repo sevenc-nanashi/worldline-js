@@ -42,6 +42,7 @@ export const phraseSynthSynth = worldline.cwrap("PhraseSynthSynth", "number", [
 ]);
 
 export const i32Size = 4;
+export const floatSize = 4;
 export const doubleSize = 8;
 export const pointerSize = 4;
 

@@ -67,23 +67,31 @@ export class PhraseSynth {
     }
 
     const f0Pointer = core.malloc<"number">(f0.length * core.doubleSize);
-    core.worldline.HEAPF32.set(f0, f0Pointer / core.doubleSize);
+    core.worldline.HEAPF64.set(f0, f0Pointer / core.doubleSize);
+
     const genderPointer = core.malloc<"number">(
       gender.length * core.doubleSize,
     );
-    core.worldline.HEAPF32.set(f0, genderPointer / core.doubleSize);
+    core.worldline.HEAPF64.set(gender, genderPointer / core.doubleSize);
+
     const tensionPointer = core.malloc<"number">(
       tension.length * core.doubleSize,
     );
-    core.worldline.HEAPF32.set(f0, tensionPointer / core.doubleSize);
+    core.worldline.HEAPF64.set(tension, tensionPointer / core.doubleSize);
+
     const breathinessPointer = core.malloc<"number">(
       breathiness.length * core.doubleSize,
     );
-    core.worldline.HEAPF32.set(f0, breathinessPointer / core.doubleSize);
+    core.worldline.HEAPF64.set(
+      breathiness,
+      breathinessPointer / core.doubleSize,
+    );
+
     const voicingPointer = core.malloc<"number">(
       voicing.length * core.doubleSize,
     );
-    core.worldline.HEAPF32.set(f0, voicingPointer / core.doubleSize);
+    core.worldline.HEAPF64.set(voicing, voicingPointer / core.doubleSize);
+
     core.phraseSynthSetCurves(
       this.#pointer,
       f0Pointer,
@@ -111,10 +119,12 @@ export class PhraseSynth {
       yPointer,
       logCallbackPointer,
     );
-    const yPointerValue = core.worldline.HEAP32[yPointer / core.pointerSize] as Pointer<"number">;
+    const yPointerValue = core.worldline.HEAP32[
+      yPointer / core.pointerSize
+    ] as Pointer<"number">;
     const y = core.worldline.HEAPF32.slice(
-      yPointerValue / core.doubleSize,
-      yPointerValue / core.doubleSize + size,
+      yPointerValue / core.floatSize,
+      yPointerValue / core.floatSize + size,
     );
 
     core.free(yPointerValue);
