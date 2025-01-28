@@ -65,7 +65,8 @@ const y = phraseSynth.synth();
 
 ## Building
 
-You need [Rake](https://ruby.github.io/rake/) and [Emscripten](https://emscripten.org/) to build this project.
+You need [Rake](https://ruby.github.io/rake/) and
+[Emscripten](https://emscripten.org/) to build this project.
 
 ```bash
 rake build                  # Build the project
