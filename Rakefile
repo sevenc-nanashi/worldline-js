@@ -5,7 +5,12 @@ emcmake_bin = ENV.fetch("EMCMAKE", "emcmake")
 emcmake_cmake_bin = ENV.fetch("EMCMAKE_CMAKE", "cmake")
 cmake_bin = ENV.fetch("CMAKE", "cmake")
 task default: %w[build]
-task build: %w[build:copy build:patch build:cmake]
+task build: %w[
+       build:copy
+       build:patch_worldline
+       build:cmake
+       build:patch_artifact
+     ]
 task "build:copy" do
   require "fileutils"
   puts "Copying files"
@@ -16,7 +21,7 @@ task "build:copy" do
                  preserve: true,
                  verbose: true
 end
-task "build:patch" do
+task "build:patch_worldline" do
   sh "#{patch_bin} -p1 < #{__dir__}/patches/worldline.patch", chdir: "worldline"
 end
 task "build:cmake", [:debug] do |_t, args|
@@ -24,6 +29,17 @@ task "build:cmake", [:debug] do |_t, args|
 
   sh "#{emcmake_bin} #{emcmake_cmake_bin} -S . -B build -DCMAKE_BUILD_TYPE=#{args[:debug] ? "Debug" : "Release"}"
   sh "#{cmake_bin} --build build"
+end
+task "build:patch_artifact" do
+  worldline_base = File.read("build/worldline.js")
+  worldline_base.gsub!('import("module")', 'import("node:module")')
+  entry = worldline_base.index("var moduleRtn")
+  worldline_base.insert(
+    entry,
+    "let Buffer = globalThis.Buffer;if(!Buffer){Buffer = await import('node:buffer').then(m => m.Buffer);}\n"
+  )
+
+  File.write("worldline.js", worldline_base)
 end
 
 task "clean" do

@@ -1,40 +1,38 @@
+import * as fs from "@cross/fs";
+import { CurrentRuntime } from "@cross/runtime";
 import { BinaryWriter } from "@sevenc-nanashi/binaryseeker";
-import { parseOtoIniLine, PhraseSynth, SynthRequest } from "./index.ts";
+import { createCrossTest } from "@sevenc-nanashi/cross-test";
+import { PhraseSynth, SynthRequest } from "./index.ts";
+
+const crossTest = await createCrossTest(import.meta.url, {
+  runtimes: ["node", "deno", "bun"],
+});
 
 // https://github.com/sevenc-nanashi/Cantari/blob/main/crates/worldline/tests/main_test.rs
-Deno.test("Hello World", async () => {
+crossTest("Hello World", async () => {
   const phraseSynth = new PhraseSynth();
   const cvcRoot =
     "./deps/tyc-utau/つくよみちゃんUTAU音源/多音階01：_B3（連続音）";
   const testAudio = `${cvcRoot}/_ああR.wav`;
-  const content = await Deno.readFile(testAudio);
+  const content = await fs.readFile(testAudio).then((x) => new Uint8Array(x));
   const data = Array.from(new Int16Array(content.slice(44).buffer)).map(
     (x) => x / 32768.0,
   );
 
-  const frq = await Deno.readFile(`${cvcRoot}/_ああR_wav.frq`);
-
-  const otoIniRaw = await Deno.readFile(`${cvcRoot}/oto.ini`);
-  const otoIni = new TextDecoder("shift-jis").decode(otoIniRaw);
-
-  const aOto = otoIni
-    .split("\n")
-    .find((line) => line.startsWith("_ああR.wav="));
-  if (!aOto) {
-    throw new Error("Cannot find _ああR.wav in oto.ini");
-  }
-
-  const aOtoParts = parseOtoIniLine(aOto);
+  const frq = await fs
+    .readFile(`${cvcRoot}/_ああR_wav.frq`)
+    .then((x) => new Uint8Array(x));
+  // 149.905,171.608,-866.658,46.608,0.0
   const request: SynthRequest = {
     sampleFs: 44100,
     samples: data,
     frq,
     tone: 40,
     conVel: 100,
-    offset: aOtoParts.offset,
+    offset: 149.905,
     requiredLength: 1000.0,
-    consonant: aOtoParts.consonant,
-    cutOff: aOtoParts.cutOff,
+    consonant: 171.608,
+    cutOff: -866.658,
     volume: 100.0,
     modulation: 0.0,
     tempo: 0.0,
@@ -77,5 +75,5 @@ Deno.test("Hello World", async () => {
   }
   const wav = buffer.toUint8Array();
 
-  await Deno.writeFile("js.wav", wav);
+  await fs.writeFile(`js-${CurrentRuntime}.wav`, wav);
 });

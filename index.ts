@@ -138,23 +138,4 @@ export class PhraseSynth {
   }
 }
 
-export const parseOtoIniLine = (line: string) => {
-  const match = line.match(
-    /(?<name>.+)=(?<alias>.+),(?<offset>.+),(?<consonant>.+),(?<cut_off>.+),(?<preutter>.+),(?<overlap>.+)/,
-  );
-  const groups = match?.groups;
-  if (!groups) {
-    throw new Error(`Invalid oto.ini line: ${line}`);
-  }
-  return {
-    fileName: groups.name,
-    alias: groups.alias,
-    offset: parseFloat(groups.offset),
-    consonant: parseFloat(groups.consonant),
-    cutOff: parseFloat(groups.cut_off),
-    preutter: parseFloat(groups.preutter),
-    overlap: parseFloat(groups.overlap),
-  };
-};
-
 export type { SynthRequest } from "./synthRequest.ts";

@@ -1,4 +1,3 @@
-declare module "./build/worldline.js";
 import "@types/emscripten";
 
 type Brand<K, T> = K & { __brand: T };

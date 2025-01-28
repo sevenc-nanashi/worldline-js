@@ -4,3 +4,4 @@ worldline
 deps/tyc-utau
 
 *.wav
+worldline.js

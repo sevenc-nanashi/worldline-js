@@ -1,6 +1,15 @@
 {
   "imports": {
+    "@cross/fs": "jsr:@cross/fs@^0.1.11",
+    "@cross/runtime": "jsr:@cross/runtime@^1.1.0",
     "@sevenc-nanashi/binaryseeker": "jsr:@sevenc-nanashi/binaryseeker@^1.2.1",
+    "@sevenc-nanashi/cross-test": "jsr:@sevenc-nanashi/cross-test@^0.0.6",
     "@types/emscripten": "npm:@types/emscripten@^1.40.0"
+  },
+  "lint": {
+    "ignore": [
+      "deps",
+      "./worldline.js"
+    ]
   }
 }

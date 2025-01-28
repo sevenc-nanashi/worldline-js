@@ -1,5 +1,5 @@
 // @ts-types="./worldline.d.ts"
-import loadWorldline, { Pointer } from "./build/worldline.js";
+import loadWorldline, { type Pointer } from "./worldline.js";
 
 export const worldline = await loadWorldline();
 
