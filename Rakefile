@@ -77,7 +77,7 @@ task "build:patch_artifact" do
   end
 
   File.write("build/worldline.patched.js", worldline_base)
-  sh "esbuild build/worldline.patched.js --bundle --minify --platform=node --outfile=worldline.js --format=esm"
+  sh "npx -y esbuild build/worldline.patched.js --bundle --minify --platform=node --outfile=worldline.js --format=esm"
 end
 
 desc "Clean the project"
