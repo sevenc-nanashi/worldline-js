@@ -42,6 +42,8 @@ end
 
 desc "Patch artifact"
 task "build:patch_artifact" do
+  require "base64"
+  require "zlib"
   worldline_base = File.read("build/worldline.js")
   worldline_base.gsub!('import("module")', 'import("node:module")')
   entry = worldline_base.index("var moduleRtn")
@@ -49,8 +51,33 @@ task "build:patch_artifact" do
     entry,
     "let Buffer = globalThis.Buffer;if(!Buffer){Buffer = await import('node:buffer').then(m => m.Buffer);}\n"
   )
+  worldline_base.gsub!(
+    %r{var wasmBinaryFile="data:application/octet-stream;base64,(.*?)"}
+  ) do
+    content = Base64.strict_decode64(Regexp.last_match(1))
+    compressed = Zlib.deflate(content, Zlib::BEST_COMPRESSION)
+    encoded = Base64.strict_encode64(compressed)
+    <<~JS
+    const compressedWasm = base64Decode("#{encoded}")
+    if (typeof DecompressionStream !== "undefined") {
+      const decompressedStream = new DecompressionStream("deflate");
+      const writer = decompressedStream.writable.getWriter();
+      writer.write(compressedWasm);
+      writer.close();
+      const decompressed = new Uint8Array(await new Response(decompressedStream.readable).arrayBuffer());
+      var wasmBinaryFile = `data:application/octet-stream;base64,${btoa(decompressed.reduce((data, byte) => data + String.fromCharCode(byte), ""))}`;
+    } else if (typeof require !== "undefined" && typeof Buffer !== "undefined") {
+      const zlib = require("zlib");
+      const decompressed = zlib.inflateSync(compressedWasm);
+      var wasmBinaryFile = `data:application/octet-stream;base64,${Buffer.from(decompressed).toString("base64")}`;
+    } else {
+      throw new Error("Unsupported environment");
+    }
+    JS
+  end
 
-  File.write("worldline.js", worldline_base)
+  File.write("build/worldline.patched.js", worldline_base)
+  sh "esbuild build/worldline.patched.js --bundle --minify --platform=node --outfile=worldline.js --format=esm"
 end
 
 desc "Clean the project"
